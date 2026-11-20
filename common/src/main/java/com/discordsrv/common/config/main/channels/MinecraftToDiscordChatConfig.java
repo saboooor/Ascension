@@ -43,10 +43,6 @@ public class MinecraftToDiscordChatConfig implements IMessageConfig {
     public Boolean enabled = true;
 
     @Comment("""
-            Wrap colored placeholders in [ansi]...[/ansi] to preserve their RGB colors on Discord.
-            Example content: "[ansi]%player_prefix%[/ansi]%essentials_nickname% ► %message%"
-            Discord displays code blocks on separate lines.
-
             Suggested placeholders:
             %message% - The formatted message content
             %player_prefix% - The player's prefix (LuckPerms meta "discordsrv_prefix", otherwise their in-game prefix)

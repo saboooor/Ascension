@@ -468,7 +468,8 @@ public class SingleConsoleHandler {
         ConsoleMessage consoleMessage = new ConsoleMessage(discordSRV, plainMessage);
         switch (outputMode) {
             case ANSI:
-                parsedMessage = consoleMessage.asAnsi();
+                // Keep colors intact until the complete line can inherit its log-level color.
+                parsedMessage = plainMessage;
                 break;
             case MARKDOWN:
                 parsedMessage = consoleMessage.asMarkdown();
@@ -514,6 +515,14 @@ public class SingleConsoleHandler {
                                 new SinglePlaceholder("message", finalMessage)
                         )
         );
+
+        if (outputMode == DiscordOutputMode.ANSI) {
+            message = new ConsoleMessage(discordSRV, message).asAnsi(entry.level());
+            if (!throwable.isEmpty()) {
+                throwable = DiscordFormattingUtil.escapeCodeBlockContent(
+                        new ConsoleMessage(discordSRV, throwable).asAnsi(entry.level()));
+            }
+        }
 
         if (outputMode == DiscordOutputMode.DIFF) {
             String diff = getLogLevelDiffCharacter(entry.level());

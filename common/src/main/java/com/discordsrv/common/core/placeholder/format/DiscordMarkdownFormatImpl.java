@@ -25,15 +25,12 @@ import dev.vankka.mcdiscordreserializer.rules.StyleNode;
 import dev.vankka.simpleast.core.node.Node;
 import dev.vankka.simpleast.core.node.TextNode;
 import dev.vankka.simpleast.core.parser.Parser;
-import dev.vankka.simpleast.core.parser.ParseSpec;
 import dev.vankka.simpleast.core.parser.Rule;
 import dev.vankka.simpleast.core.simple.SimpleMarkdownRules;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class DiscordMarkdownFormatImpl implements PlainPlaceholderFormat {
 
@@ -43,17 +40,6 @@ public class DiscordMarkdownFormatImpl implements PlainPlaceholderFormat {
         List<Rule<Object, Node<Object>, Object>> rules = new ArrayList<>();
         rules.add(SimpleMarkdownRules.createEscapeRule());
         rules.add(SimpleMarkdownRules.createNewlineRule());
-        // Render ANSI template tags as Discord code blocks.
-        rules.add(new Rule<Object, Node<Object>, Object>(Pattern.compile("^\\[ansi]([\\s\\S]*?)\\[/ansi]")) {
-            @Override
-            public ParseSpec<Object, Node<Object>, Object> parse(
-                    Matcher matcher, Parser<Object, Node<Object>, Object> parser, Object state) {
-                return ParseSpec.createTerminal(
-                        StyleNode.createWithText(matcher.group(1),
-                                new ArrayList<>(List.of(new StyleNode.CodeBlockStyle("ansi")))),
-                        state);
-            }
-        });
         rules.add(DiscordMarkdownRules.createCodeBlockRule());
         rules.add(DiscordMarkdownRules.createCodeStringRule());
         rules.add(DiscordMarkdownRules.createSpecialTextRule());

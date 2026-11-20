@@ -50,7 +50,7 @@ public class ConsoleConfig {
         @Comment("""
                 The mode for the console output, available options are:
                 - off: Turn off console appending
-                - ansi: A colored ansi code block
+                - ansi: A colored ansi code block (errors default to red and warnings to yellow)
                 - log: An "accesslog" code block
                 - diff: A "diff" code block highlighting warnings and errors with different colors
                 - markdown: Plain text with bold, italics, strikethrough and underlining

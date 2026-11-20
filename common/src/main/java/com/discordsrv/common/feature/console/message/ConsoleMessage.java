@@ -19,6 +19,7 @@
 package com.discordsrv.common.feature.console.message;
 
 import com.discordsrv.common.DiscordSRV;
+import com.discordsrv.common.logging.LogLevel;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.*;
@@ -58,9 +59,13 @@ public class ConsoleMessage {
                     // Legacy color/formatting
                     + "(?:" + SECTION + "[0-9a-fk-or])"
                     + "|"
-                    // Bungee/Spigot legacy
+                    // Bungee/Spigot legacy RGB
                     + "(?:" + SECTION + "x(?:" + SECTION + "[0-9a-f]){6})"
-                    + ")"
+                    + "|"
+                    // Adventure compact RGB
+                    + "(?:" + SECTION + "#[0-9a-f]{6})"
+                    + ")",
+            Pattern.CASE_INSENSITIVE
     );
 
     private final TextComponent.Builder builder = Component.text();
@@ -85,6 +90,16 @@ public class ConsoleMessage {
 
     public String asAnsi() {
         return discordSRV.componentFactory().ansiSerializer().serialize(component()) + (ANSI_ESCAPE + "[0m");
+    }
+
+    public String asAnsi(LogLevel level) {
+        TextColor fallback = null;
+        switch (level.name().toUpperCase(java.util.Locale.ROOT)) {
+            case "ERROR", "SEVERE", "FATAL" -> fallback = NamedTextColor.RED;
+            case "WARN", "WARNING" -> fallback = NamedTextColor.YELLOW;
+        }
+        Component colored = Component.empty().color(fallback).append(component());
+        return discordSRV.componentFactory().ansiSerializer().serialize(colored) + (ANSI_ESCAPE + "[0m");
     }
 
     public String asPlain() {
@@ -326,7 +341,7 @@ public class ConsoleMessage {
 
     private void parseLegacy(String legacy, Style.Builder style) {
         if (legacy.length() == 2) {
-            char character = legacy.toCharArray()[1];
+            char character = Character.toLowerCase(legacy.charAt(1));
             if (character == 'r') {
                 style.color(null).decorations(EnumSet.allOf(TextDecoration.class), false);
             } else {
@@ -337,11 +352,12 @@ public class ConsoleMessage {
                     style.decorate((TextDecoration) format);
                 }
             }
+        } else if (legacy.charAt(1) == '#') {
+            style.color(TextColor.fromHexString(legacy.substring(1)));
         } else {
-            char[] characters = legacy.toCharArray();
             StringBuilder hex = new StringBuilder(7).append(TextColor.HEX_PREFIX);
-            for (int i = 2; i < characters.length; i += 2) {
-                hex.append(characters[i]);
+            for (int i = 3; i < legacy.length(); i += 2) {
+                hex.append(legacy.charAt(i));
             }
             style.color(TextColor.fromHexString(hex.toString()));
         }
