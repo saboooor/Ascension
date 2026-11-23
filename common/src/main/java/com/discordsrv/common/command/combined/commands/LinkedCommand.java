@@ -90,8 +90,6 @@ public class LinkedCommand extends CombinedCommand {
 
     @Override
     public void execute(CommandExecution execution) {
-        execution.setEphemeral(true);
-
         LinkProvider linkProvider = discordSRV.linkProvider();
         if (linkProvider == null) {
             execution.send(new Text("Cannot check linking status using this link provider").withGameColor(NamedTextColor.DARK_RED));

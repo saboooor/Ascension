@@ -84,7 +84,7 @@ public class PlayerListCommand implements Consumer<DiscordChatInputInteractionEv
 
     @Override
     public void accept(DiscordChatInputInteractionEvent event) {
-        event.reply(generatePagination(0), true)
+        event.reply(generatePagination(0), discordSRV.config().playerList.command.ephemeral)
                 .whenFailed(t -> logger.debug("Failed to send create pagination", t));
     }
 

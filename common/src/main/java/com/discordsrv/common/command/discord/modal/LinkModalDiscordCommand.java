@@ -86,46 +86,47 @@ public class LinkModalDiscordCommand implements Consumer<DiscordModalInteraction
 
     @Override
     public void accept(DiscordModalInteractionEvent event) {
+        boolean ephemeral = discordSRV.config().discordCommand.ephemeral;
         DiscordUser user = event.getUser();
         MessagesConfig messagesConfig = discordSRV.messagesConfig(event.getUserLocale());
 
         LinkProvider linkProvider = discordSRV.linkProvider();
         if (linkProvider == null || !linkProvider.usesLocalLinking()) {
-            event.reply(SendableDiscordMessage.builder().setContent("Cannot create links using this link provider").build());
+            event.reply(SendableDiscordMessage.builder().setContent("Cannot create links using this link provider").build(), ephemeral);
             return;
         }
         LinkStore linkStore = linkProvider.store();
 
         LinkingModule module = discordSRV.getModule(LinkingModule.class);
         if (module == null) {
-            event.reply(SendableDiscordMessage.builder().setContent("Unable to link at this time").build());
+            event.reply(SendableDiscordMessage.builder().setContent("Unable to link at this time").build(), ephemeral);
             return;
         }
 
         if (module.rateLimit(event.getUser().getId())) {
-            event.reply(messagesConfig.pleaseWaitBeforeRunningThatCommandAgain.discord().get());
+            event.reply(messagesConfig.pleaseWaitBeforeRunningThatCommandAgain.discord().get(), ephemeral);
             return;
         }
 
         ModalMapping codeValue = event.asJDA().getValue(CODE_IDENTIFIER.getDiscordIdentifier());
         String code = codeValue == null ? "" : codeValue.getAsString();
         if (StringUtils.isEmpty(code) || !linkStore.isValidCode(code)) {
-            event.reply(messagesConfig.invalidLinkingCode.get(), true);
+            event.reply(messagesConfig.invalidLinkingCode.get(), ephemeral);
             return;
         }
 
         if (linkProvider.getCached(user.getId()).isPresent()) {
-            event.reply(messagesConfig.alreadyLinked1st.discord().get(), true);
+            event.reply(messagesConfig.alreadyLinked1st.discord().get(), ephemeral);
             return;
         }
 
         if (linkCheckRateLimit.getIfPresent(user.getId()) != null) {
-            event.reply(messagesConfig.pleaseWaitBeforeRunningThatCommandAgain.discord().get(), true);
+            event.reply(messagesConfig.pleaseWaitBeforeRunningThatCommandAgain.discord().get(), ephemeral);
             return;
         }
         linkCheckRateLimit.put(user.getId(), true);
 
-        event.deferReply(true).whenComplete((interactionHook, t1) -> {
+        event.deferReply(ephemeral).whenComplete((interactionHook, t1) -> {
             if (t1 != null) {
                 logger.error("Failed to defer reply", t1);
                 return;

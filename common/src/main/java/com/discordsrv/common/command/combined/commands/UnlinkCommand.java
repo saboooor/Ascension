@@ -113,8 +113,6 @@ public class UnlinkCommand extends CombinedCommand {
 
     @Override
     public void execute(CommandExecution execution) {
-        execution.setEphemeral(true);
-
         LinkProvider linkProvider = discordSRV.linkProvider();
         if (linkProvider == null || !linkProvider.usesLocalLinking()) {
             execution.send(new Text("Cannot remove links with this link provider").withGameColor(NamedTextColor.DARK_RED));

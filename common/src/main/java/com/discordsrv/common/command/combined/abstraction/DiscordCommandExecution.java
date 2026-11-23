@@ -55,6 +55,7 @@ public class DiscordCommandExecution implements CommandExecution {
         this.event = event;
         this.interactionPayload = event.asJDA();
         this.replyCallback = event.asJDA();
+        this.isEphemeral.set(discordSRV.config().discordCommand.ephemeral);
     }
 
     public DiscordUser getUser() {

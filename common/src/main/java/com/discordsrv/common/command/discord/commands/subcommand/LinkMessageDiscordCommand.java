@@ -67,7 +67,7 @@ public class LinkMessageDiscordCommand implements Consumer<DiscordChatInputInter
                                         .setLabel(discordSRV.messagesConfig().linkMessageButtonLabel)
                                         .build()
                         ).build()
-        ).whenSuccessful(message -> event.reply(discordSRV.messagesConfig().linkMessageSuccess.get(), true));
+        ).whenSuccessful(message -> event.reply(discordSRV.messagesConfig().linkMessageSuccess.get(), discordSRV.config().discordCommand.ephemeral));
     }
 
     @Subscribe

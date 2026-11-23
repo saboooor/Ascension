@@ -92,6 +92,9 @@ public class PlayerListConfig {
 
     public static class Command {
 
+        @Comment("If the command output should only be visible to the user who ran the command")
+        public boolean ephemeral = true;
+
         @Comment("""
                 The output mode for the message
                 - ansi: A colored ansi code block

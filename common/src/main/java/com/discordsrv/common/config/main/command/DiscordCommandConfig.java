@@ -25,6 +25,12 @@ import org.spongepowered.configurate.objectmapping.meta.Comment;
 public class DiscordCommandConfig {
 
     @Comment("""
+            If built-in Discord command output should only be visible to the user who ran the command
+            This includes account linking and management commands.
+            Playerlist, execute and custom commands use their own ephemeral settings""")
+    public boolean ephemeral = true;
+
+    @Comment("""
             The Discord server id to limit the /discordsrv command to, disables the use of the command in DMs regardless of the below option
             Set to 0 to disable, enabling the command in all servers the bot is in""")
     public long managementCommandServerId = 0L;
